@@ -1,9 +1,10 @@
 name: Build and push
 
+# yamllint disable-line rule:truthy
 on:
   push:
     branches: [main]
-  workflow_dispatch:
+  workflow_dispatch: ~
 
 permissions:
   contents: read
