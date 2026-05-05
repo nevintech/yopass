@@ -34,7 +34,7 @@ change — bump the YAML, `docker compose up -d`, done.
 | `--port=1337 --address=0.0.0.0` | Listens on the private network interface |
 | `--trusted-proxies=${REVERSE_PROXY_PRIVATE_IP}/32` | Trust X-Forwarded-For only from the Caddy box |
 | `--force-onetime-secrets` | Compliance: every secret self-destructs after one read |
-| `--app-name=Nevin` | Header/title (sent via /config to the React app) |
+| `--app-name=Nevin ❤️ yopass` | Header/title (sent via /config to the React app); credits the upstream open-source project |
 | `--logo-url=/nevin-logo.svg` | Logo path under the embedded `/public` directory |
 | `--theme-light=nord --theme-dark=nord` | DaisyUI built-in base |
 | `--theme-custom-light=...` | OKLCH overrides for primary/accent/base-content |
