@@ -1,0 +1,49 @@
+services:
+  yopass:
+    image: rg.nl-ams.scw.cloud/nevin-sandbox/yopass:latest
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    command:
+      - --memcached=memcached:11211
+      - --port=1337
+      - --address=0.0.0.0
+      - --trusted-proxies=${REVERSE_PROXY_PRIVATE_IP}/32
+      - --force-onetime-secrets
+      - --app-name=Nevin ❤️ yopass
+      - --logo-url=/nevin-logo.svg
+      - --theme-light=nord
+      - --theme-dark=nord
+      # yamllint disable rule:line-length
+      - '--theme-custom-light={"--color-primary":"oklch(38.81% 0.0990 299.80)","--color-accent":"oklch(81.55% 0.1479 73.01)","--color-base-content":"oklch(38.29% 0.0000 89.88)"}'
+      - '--theme-custom-dark={"--color-primary":"oklch(38.81% 0.0990 299.80)","--color-accent":"oklch(81.55% 0.1479 73.01)"}'
+      # yamllint enable rule:line-length
+    depends_on:
+      memcached:
+        condition: service_started
+    ports:
+      - "1337:1337"
+    healthcheck:
+      test: ["CMD", "/yopass-server", "--health-check"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  memcached:
+    image: memcached:alpine
+    restart: unless-stopped
+    expose:
+      - "11211"
+
+  watchtower:
+    image: containrrr/watchtower:1.7
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${HOME}/.docker/config.json:/config.json:ro
+    command:
+      - --interval=60
+      - --cleanup
+      - --label-enable
+      - --rolling-restart

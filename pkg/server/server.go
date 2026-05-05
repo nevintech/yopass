@@ -1,6 +1,7 @@
 package server
 
 import (
+	"cmp"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -371,39 +372,32 @@ func (y *Server) configHandler(w http.ResponseWriter, r *http.Request) {
 	if imprintURL := viper.GetString("imprint-url"); imprintURL != "" {
 		config["IMPRINT_URL"] = imprintURL
 	}
-	if y.License.Valid {
-		if logoURL := viper.GetString("logo-url"); logoURL != "" {
-			config["LOGO_URL"] = logoURL
-		}
+	if logoURL := viper.GetString("logo-url"); logoURL != "" {
+		config["LOGO_URL"] = logoURL
 	}
 
 	oidcEnabled := y.OIDCProvider != nil
 	config["OIDC_ENABLED"] = oidcEnabled
 	config["REQUIRE_AUTH"] = oidcEnabled && viper.GetBool("require-auth")
 
-	if y.License.Valid {
-		config["THEME_LIGHT"] = viper.GetString("theme-light")
-		config["THEME_DARK"] = viper.GetString("theme-dark")
+	config["THEME_LIGHT"] = cmp.Or(viper.GetString("theme-light"), "emerald")
+	config["THEME_DARK"] = cmp.Or(viper.GetString("theme-dark"), "dim")
 
-		if rawLight := viper.GetString("theme-custom-light"); rawLight != "" {
-			var vars map[string]string
-			if err := json.Unmarshal([]byte(rawLight), &vars); err == nil {
-				config["THEME_CUSTOM_LIGHT"] = vars
-			}
+	if rawLight := viper.GetString("theme-custom-light"); rawLight != "" {
+		var vars map[string]string
+		if err := json.Unmarshal([]byte(rawLight), &vars); err == nil {
+			config["THEME_CUSTOM_LIGHT"] = vars
 		}
-		if rawDark := viper.GetString("theme-custom-dark"); rawDark != "" {
-			var vars map[string]string
-			if err := json.Unmarshal([]byte(rawDark), &vars); err == nil {
-				config["THEME_CUSTOM_DARK"] = vars
-			}
+	}
+	if rawDark := viper.GetString("theme-custom-dark"); rawDark != "" {
+		var vars map[string]string
+		if err := json.Unmarshal([]byte(rawDark), &vars); err == nil {
+			config["THEME_CUSTOM_DARK"] = vars
 		}
+	}
 
-		if appName := viper.GetString("app-name"); appName != "" {
-			config["APP_NAME"] = appName
-		}
-	} else {
-		config["THEME_LIGHT"] = "emerald"
-		config["THEME_DARK"] = "dim"
+	if appName := viper.GetString("app-name"); appName != "" {
+		config["APP_NAME"] = appName
 	}
 
 	if err := json.NewEncoder(w).Encode(config); err != nil {

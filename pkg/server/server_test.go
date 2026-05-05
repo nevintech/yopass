@@ -1812,13 +1812,16 @@ func TestCORSMiddlewareFrontendURLNoPath(t *testing.T) {
 // TestConfigHandler_LicensedBranches covers the optional viper flags and
 // License.Valid branches of configHandler that the existing TestConfigHandler*
 // tests do not reach: MAX_FILE_SIZE, LOGO_URL, OIDC_ENABLED/REQUIRE_AUTH,
-// THEME_CUSTOM_*, APP_NAME, and the unlicensed fallback theme.
+// THEME_CUSTOM_*, APP_NAME, and the theme fallback path.
+//
+// Nevin fork note: branding (LOGO_URL, APP_NAME, THEME_*) is no longer
+// license-gated — the flags are honored regardless of license status.
 func TestConfigHandler_LicensedBranches(t *testing.T) {
-	t.Run("unlicensed defaults omit custom branding", func(t *testing.T) {
+	t.Run("unlicensed: branding flags honored, theme falls back when unset", func(t *testing.T) {
 		viper.Reset()
 		t.Cleanup(viper.Reset)
-		viper.Set("logo-url", "https://cdn.example/logo.svg") // ignored without license
-		viper.Set("app-name", "Ignored")                       // ignored without license
+		viper.Set("logo-url", "https://cdn.example/logo.svg")
+		viper.Set("app-name", "Honored Without License")
 
 		s := newTestServer(t, &mockDB{}, 1, false)
 		s.MaxFileSize = 0
@@ -1834,9 +1837,15 @@ func TestConfigHandler_LicensedBranches(t *testing.T) {
 		}
 
 		if cfg["THEME_LIGHT"] != "emerald" || cfg["THEME_DARK"] != "dim" {
-			t.Fatalf("expected fallback emerald/dim themes, got %v / %v", cfg["THEME_LIGHT"], cfg["THEME_DARK"])
+			t.Fatalf("expected fallback emerald/dim themes when no theme flag set, got %v / %v", cfg["THEME_LIGHT"], cfg["THEME_DARK"])
 		}
-		for _, key := range []string{"LOGO_URL", "APP_NAME", "THEME_CUSTOM_LIGHT", "THEME_CUSTOM_DARK", "MAX_FILE_SIZE"} {
+		if cfg["LOGO_URL"] != "https://cdn.example/logo.svg" {
+			t.Errorf("LOGO_URL: expected honored without license, got %v", cfg["LOGO_URL"])
+		}
+		if cfg["APP_NAME"] != "Honored Without License" {
+			t.Errorf("APP_NAME: expected honored without license, got %v", cfg["APP_NAME"])
+		}
+		for _, key := range []string{"THEME_CUSTOM_LIGHT", "THEME_CUSTOM_DARK", "MAX_FILE_SIZE"} {
 			if _, ok := cfg[key]; ok {
 				t.Errorf("expected %q to be absent, got %v", key, cfg[key])
 			}
