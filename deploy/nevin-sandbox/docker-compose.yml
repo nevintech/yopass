@@ -2,6 +2,8 @@ services:
   yopass:
     image: rg.nl-ams.scw.cloud/nevin-sandbox/yopass:latest
     restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
     command:
       - --memcached=memcached:11211
       - --port=1337
@@ -31,3 +33,15 @@ services:
     restart: unless-stopped
     expose:
       - "11211"
+
+  watchtower:
+    image: containrrr/watchtower:1.7
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${HOME}/.docker/config.json:/config.json:ro
+    command:
+      - --interval=60
+      - --cleanup
+      - --label-enable
+      - --rolling-restart

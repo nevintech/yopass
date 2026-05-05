@@ -1,4 +1,4 @@
-name: Build and deploy
+name: Build and push
 
 on:
   push:
@@ -9,7 +9,7 @@ permissions:
   contents: read
 
 jobs:
-  deploy-sandbox:
+  build-push:
     runs-on: ubuntu-latest
     environment: sandbox
     steps:
@@ -34,17 +34,3 @@ jobs:
             rg.nl-ams.scw.cloud/nevin-sandbox/yopass:${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-
-      - name: Redeploy on the Yopass instance
-        uses: appleboy/ssh-action@v1
-        with:
-          host: ${{ secrets.DEPLOY_HOST }}
-          username: ${{ secrets.DEPLOY_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
-            set -euo pipefail
-            cd ~/yopass
-            echo "${{ secrets.SCW_SECRET_KEY }}" | docker login rg.nl-ams.scw.cloud -u nologin --password-stdin
-            docker compose pull
-            docker compose up -d
-            docker image prune -f

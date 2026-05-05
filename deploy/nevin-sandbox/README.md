@@ -10,16 +10,45 @@ Phase 4).
 └── .env                 # copy of .env.example with REVERSE_PROXY_PRIVATE_IP filled in
 ```
 
-## On the instance
+## Deployment model
+
+**Pull-based.** CI builds and pushes the image; **Watchtower** on the instance
+polls the registry every 60s for a new digest of `:latest` and recreates the
+yopass container when one appears. No SSH from CI to prod, no GitHub deploy
+keys to manage.
+
+```
+git push main → GitHub Actions builds & pushes → Watchtower pulls → yopass restarts
+   ~2 min                  ~30s                    ≤60s poll      ~5s
+```
+
+End-to-end: ~3 minutes from `git push` to live.
+
+## First-time setup on the instance
 
 ```sh
 mkdir -p ~/yopass && cd ~/yopass
 # Copy docker-compose.yml and .env from this repo's deploy/nevin-sandbox/
 # (e.g. via scp from your laptop, or `git clone` then symlink)
+
+# One-time docker login → writes auth blob to ~/.docker/config.json,
+# which Watchtower mounts read-only for its pulls.
 echo "$SCW_SECRET_KEY" | docker login rg.nl-ams.scw.cloud -u nologin --password-stdin
-docker compose pull
+
 docker compose up -d
 ```
+
+After this, `docker compose ps` shows three services running: `yopass`,
+`memcached`, `watchtower`. To watch updates flow through:
+
+```sh
+docker compose logs -f watchtower    # see poll/pull/restart events
+```
+
+## Updating the image
+
+Just push to `main` of `nevintech/yopass`. Watchtower picks it up within 60s.
+For a manual force-refresh on the box: `docker compose pull && docker compose up -d`.
 
 ## Branding flags explained
 
