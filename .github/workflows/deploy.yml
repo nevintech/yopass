@@ -3,7 +3,7 @@ name: Build and push
 # yamllint disable-line rule:truthy
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch: ~
 
 permissions:
