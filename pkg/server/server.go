@@ -1,6 +1,7 @@
 package server
 
 import (
+	"cmp"
 	"encoding/json"
 	"net/http"
 	"net/url"
@@ -379,16 +380,8 @@ func (y *Server) configHandler(w http.ResponseWriter, r *http.Request) {
 	config["OIDC_ENABLED"] = oidcEnabled
 	config["REQUIRE_AUTH"] = oidcEnabled && viper.GetBool("require-auth")
 
-	themeLight := viper.GetString("theme-light")
-	if themeLight == "" {
-		themeLight = "emerald"
-	}
-	themeDark := viper.GetString("theme-dark")
-	if themeDark == "" {
-		themeDark = "dim"
-	}
-	config["THEME_LIGHT"] = themeLight
-	config["THEME_DARK"] = themeDark
+	config["THEME_LIGHT"] = cmp.Or(viper.GetString("theme-light"), "emerald")
+	config["THEME_DARK"] = cmp.Or(viper.GetString("theme-dark"), "dim")
 
 	if rawLight := viper.GetString("theme-custom-light"); rawLight != "" {
 		var vars map[string]string
