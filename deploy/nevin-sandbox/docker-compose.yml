@@ -37,7 +37,7 @@ services:
       - "11211"
 
   watchtower:
-    image: containrrr/watchtower:1.7
+    image: containrrr/watchtower:latest
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
