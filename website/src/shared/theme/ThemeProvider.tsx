@@ -5,8 +5,6 @@ import {
   type LogicalTheme,
   getInitialLogicalTheme,
   THEME_STORAGE_KEY,
-  CUSTOM_LIGHT_THEME_NAME,
-  CUSTOM_DARK_THEME_NAME,
 } from './theme';
 
 interface ThemeContextValue {
@@ -48,13 +46,13 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   } = useConfig();
   const [mode, setMode] = useState<LogicalTheme>(getInitialLogicalTheme);
 
-  const lightName = THEME_CUSTOM_LIGHT ? CUSTOM_LIGHT_THEME_NAME : THEME_LIGHT;
-  const darkName = THEME_CUSTOM_DARK ? CUSTOM_DARK_THEME_NAME : THEME_DARK;
+  const lightName = THEME_LIGHT;
+  const darkName = THEME_DARK;
 
   useEffect(() => {
-    injectCustomThemeStyle(CUSTOM_LIGHT_THEME_NAME, THEME_CUSTOM_LIGHT);
-    injectCustomThemeStyle(CUSTOM_DARK_THEME_NAME, THEME_CUSTOM_DARK);
-  }, [THEME_CUSTOM_LIGHT, THEME_CUSTOM_DARK]);
+    injectCustomThemeStyle(lightName, THEME_CUSTOM_LIGHT);
+    injectCustomThemeStyle(darkName, THEME_CUSTOM_DARK);
+  }, [lightName, darkName, THEME_CUSTOM_LIGHT, THEME_CUSTOM_DARK]);
 
   useEffect(() => {
     const daisyTheme = mode === 'dark' ? darkName : lightName;

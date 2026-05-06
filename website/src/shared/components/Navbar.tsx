@@ -26,7 +26,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center">
             <a
-              className="flex items-center text-lg font-bold tracking-tight text-base-content hover:text-primary transition-colors duration-200 px-2 py-1 rounded-md hover:bg-base-200"
+              className="flex items-center text-2xl font-bold tracking-tight text-base-content hover:text-primary transition-colors duration-200 px-2 py-1 rounded-md hover:bg-base-200"
               href="/"
             >
               <img
