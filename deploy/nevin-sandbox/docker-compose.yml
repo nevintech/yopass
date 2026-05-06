@@ -39,6 +39,10 @@ services:
   watchtower:
     image: containrrr/watchtower:latest
     restart: unless-stopped
+    environment:
+      # The bundled Docker SDK negotiates at API 1.25, which Docker 29.x
+      # rejects (min 1.40). Pin to a version both sides accept.
+      DOCKER_API_VERSION: "1.40"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - ${HOME}/.docker/config.json:/config.json:ro
