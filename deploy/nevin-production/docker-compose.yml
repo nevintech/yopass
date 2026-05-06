@@ -16,7 +16,7 @@ services:
       - --force-onetime-secrets
       - --app-name=Nevin
       - --logo-url=/nevin-logo.svg
-      - --theme-light=nord
+      - --theme-light=light
       - --theme-dark=night
       # yamllint disable rule:line-length
       - '--theme-custom-light={"--color-primary":"oklch(38.81% 0.0990 299.80)","--color-primary-content":"oklch(100% 0 0)","--color-accent":"oklch(81.55% 0.1479 73.01)","--color-base-content":"oklch(38.29% 0.0000 89.88)"}'
