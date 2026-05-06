@@ -31,7 +31,8 @@ services:
       - /etc/yopass/origin.crt:/tls/origin.crt:ro
       - /etc/yopass/origin.key:/tls/origin.key:ro
     healthcheck:
-      test: ["CMD", "/yopass-server", "--health-check"]
+      test:
+        ["CMD", "/yopass-server", "--health-check", "--memcached=memcached:11211"]
       interval: 30s
       timeout: 3s
       retries: 3

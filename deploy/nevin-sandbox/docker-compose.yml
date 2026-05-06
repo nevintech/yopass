@@ -24,7 +24,8 @@ services:
     ports:
       - "1337:1337"
     healthcheck:
-      test: ["CMD", "/yopass-server", "--health-check"]
+      test:
+        ["CMD", "/yopass-server", "--health-check", "--memcached=memcached:11211"]
       interval: 30s
       timeout: 3s
       retries: 3
