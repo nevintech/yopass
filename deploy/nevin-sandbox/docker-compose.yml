@@ -10,7 +10,7 @@ services:
       - --address=0.0.0.0
       - --trusted-proxies=${REVERSE_PROXY_PRIVATE_IP}/32
       - --force-onetime-secrets
-      - --app-name=Nevin ❤️ yopass
+      - "--app-name=❤️ yopass"
       - --logo-url=/nevin-logo.svg
       - --theme-light=nord
       - --theme-dark=nord
