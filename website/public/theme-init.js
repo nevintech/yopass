@@ -1,6 +1,6 @@
 (function () {
   try {
-    var DEFAULT_LIGHT = 'nord';
+    var DEFAULT_LIGHT = 'light';
     var DEFAULT_DARK = 'night';
     var storedMode = localStorage.getItem('themeMode'); // 'light' | 'dark'
     var prefersDark =
