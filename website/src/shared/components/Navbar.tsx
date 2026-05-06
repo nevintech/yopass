@@ -32,7 +32,7 @@ export default function Navbar() {
               <img
                 src={LOGO_URL ?? '/yopass.svg'}
                 alt={APP_NAME ?? 'Yopass'}
-                className="h-8 w-8 mr-3"
+                className="h-10 w-auto mr-3"
               />
               {APP_NAME ?? t('header.appName')}
             </a>
