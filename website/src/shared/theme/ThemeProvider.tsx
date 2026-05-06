@@ -37,13 +37,8 @@ function injectCustomThemeStyle(
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const {
-    THEME_LIGHT,
-    THEME_DARK,
-    THEME_CUSTOM_LIGHT,
-    THEME_CUSTOM_DARK,
-    APP_NAME,
-  } = useConfig();
+  const { THEME_LIGHT, THEME_DARK, THEME_CUSTOM_LIGHT, THEME_CUSTOM_DARK } =
+    useConfig();
   const [mode, setMode] = useState<LogicalTheme>(getInitialLogicalTheme);
 
   const lightName = THEME_LIGHT;
@@ -78,10 +73,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     mq.addEventListener('change', onChange);
     return () => mq.removeEventListener('change', onChange);
   }, []);
-
-  useEffect(() => {
-    if (APP_NAME) document.title = APP_NAME;
-  }, [APP_NAME]);
 
   function toggleTheme() {
     setMode(prev => {
