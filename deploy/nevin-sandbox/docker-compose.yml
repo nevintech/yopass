@@ -13,7 +13,7 @@ services:
       - "--app-name=❤️ yopass"
       - --logo-url=/nevin-logo.svg
       - --theme-light=nord
-      - --theme-dark=coffee
+      - --theme-dark=night
       # yamllint disable rule:line-length
       - '--theme-custom-light={"--color-primary":"oklch(38.81% 0.0990 299.80)","--color-accent":"oklch(81.55% 0.1479 73.01)","--color-base-content":"oklch(38.29% 0.0000 89.88)"}'
       - '--theme-custom-dark={"--color-primary":"oklch(38.81% 0.0990 299.80)","--color-accent":"oklch(81.55% 0.1479 73.01)"}'
