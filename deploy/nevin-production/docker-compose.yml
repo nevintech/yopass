@@ -1,0 +1,58 @@
+services:
+  yopass:
+    image: rg.nl-ams.scw.cloud/nevin-production/yopass:latest
+    restart: unless-stopped
+    labels:
+      - "com.centurylinklabs.watchtower.enable=true"
+    command:
+      - --memcached=memcached:11211
+      - --port=443
+      - --address=0.0.0.0
+      - --tls-cert=/tls/origin.crt
+      - --tls-key=/tls/origin.key
+      # The SG only admits Cloudflare CIDRs, so any inbound is by definition
+      # behind CF. Trust the whole space and use the X-Forwarded-For CF adds.
+      - --trusted-proxies=0.0.0.0/0
+      - --force-onetime-secrets
+      - --app-name=Nevin
+      - --logo-url=/nevin-logo.svg
+      - --theme-light=nord
+      - --theme-dark=night
+      # yamllint disable rule:line-length
+      - '--theme-custom-light={"--color-primary":"oklch(38.81% 0.0990 299.80)","--color-primary-content":"oklch(100% 0 0)","--color-accent":"oklch(81.55% 0.1479 73.01)","--color-base-content":"oklch(38.29% 0.0000 89.88)"}'
+      - '--theme-custom-dark={"--color-primary":"oklch(38.81% 0.0990 299.80)","--color-primary-content":"oklch(100% 0 0)","--color-accent":"oklch(81.55% 0.1479 73.01)"}'
+      # yamllint enable rule:line-length
+    depends_on:
+      memcached:
+        condition: service_started
+    ports:
+      - "443:443"
+    volumes:
+      - /etc/yopass/origin.crt:/tls/origin.crt:ro
+      - /etc/yopass/origin.key:/tls/origin.key:ro
+    healthcheck:
+      test: ["CMD", "/yopass-server", "--health-check"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+
+  memcached:
+    image: memcached:alpine
+    restart: unless-stopped
+    expose:
+      - "11211"
+
+  watchtower:
+    image: containrrr/watchtower:latest
+    restart: unless-stopped
+    environment:
+      DOCKER_API_VERSION: "1.40"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ${HOME}/.docker/config.json:/config.json:ro
+    command:
+      - --interval=60
+      - --cleanup
+      - --label-enable
+      - --rolling-restart
