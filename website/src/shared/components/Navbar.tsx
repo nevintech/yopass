@@ -31,10 +31,9 @@ export default function Navbar() {
             >
               <img
                 src={LOGO_URL ?? '/yopass.svg'}
-                alt={APP_NAME ?? 'Yopass'}
-                className="h-8 sm:h-10 w-auto mr-2 sm:mr-3"
+                alt={APP_NAME ?? t('header.appName')}
+                className="h-8 sm:h-10 w-auto"
               />
-              {APP_NAME ?? t('header.appName')}
             </a>
           </div>
           <div className="flex items-center gap-2">
