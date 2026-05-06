@@ -57,19 +57,42 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const daisyTheme = mode === 'dark' ? darkName : lightName;
     document.documentElement.setAttribute('data-theme', daisyTheme);
-    try {
-      localStorage.setItem(THEME_STORAGE_KEY, mode);
-    } catch {
-      void 0;
-    }
   }, [mode, lightName, darkName]);
+
+  // Follow live OS dark/light changes only when the user hasn't made a
+  // manual choice. Once they toggle, localStorage holds their preference
+  // and we leave it alone.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    function onChange(e: MediaQueryListEvent) {
+      let stored: string | null = null;
+      try {
+        stored = localStorage.getItem(THEME_STORAGE_KEY);
+      } catch {
+        void 0;
+      }
+      if (stored === 'light' || stored === 'dark') return;
+      setMode(e.matches ? 'dark' : 'light');
+    }
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
 
   useEffect(() => {
     if (APP_NAME) document.title = APP_NAME;
   }, [APP_NAME]);
 
   function toggleTheme() {
-    setMode(prev => (prev === 'dark' ? 'light' : 'dark'));
+    setMode(prev => {
+      const next = prev === 'dark' ? 'light' : 'dark';
+      try {
+        localStorage.setItem(THEME_STORAGE_KEY, next);
+      } catch {
+        void 0;
+      }
+      return next;
+    });
   }
 
   return (
